@@ -1,6 +1,6 @@
-function mat_S = CreazioneOsservatore(A,B,C,value)
+function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
     %inizializzazione dei valori da utilizzare
-    syms t;
+    syms t
     dim_A = size(A);
     n = dim_A(1);
     I = eye(n);
