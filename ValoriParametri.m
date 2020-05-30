@@ -19,3 +19,5 @@ C = [1 0 0 0];
 value = 2;
 
 [mat_S,V] = CreazioneOsservatore(A,B,C,value);
+
+M = [0;0;0;1/m2];       %matrice del segnale di disturbo
