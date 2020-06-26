@@ -30,3 +30,5 @@ fprintf("progettazione dell'osservatore asintotico dello stato in cui\nsi impone
 fprintf("------------------------------------------------------------\n");
 
 [mat_f,V] = CreazioneOsservatore(A,B,C,value);      %mat_f = A-VC
+
+AndamentoErroreDiStima(mat_f,x0);

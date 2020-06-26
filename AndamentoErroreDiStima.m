@@ -1,4 +1,4 @@
-function AndamentoErroreDiStima(mat_S,x0)
+function AndamentoErroreDiStima(mat_f,x0)
     %funzione che calcola la matrice esponenziale e^(A-VC) che serve per
     %calcolare l'errore di stima durante l'intervallo interessato
     
@@ -8,14 +8,14 @@ function AndamentoErroreDiStima(mat_S,x0)
     
     syms s t;
     
-    dim = size(mat_S);
+    dim = size(mat_f);
     n = dim(1);
     
     I = eye(n);
     time = [0:1:10];
     
     mat1 = s*I;
-    mat2 = mat1-mat_S;
+    mat2 = mat1-mat_f;
     mat3 = inv(mat2);
     mat = ilaplace(mat3);
     
