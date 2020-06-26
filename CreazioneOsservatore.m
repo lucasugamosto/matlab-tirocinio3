@@ -1,4 +1,4 @@
-function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
+function [mat_f,V] = CreazioneOsservatore(A,B,C,value)
     %inizializzazione dei valori da utilizzare
     syms t
     dim_A = size(A);
@@ -12,7 +12,7 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
     end
     
     if rank(Q) == n
-        fprintf("il sistema primale S è osservabile\n");
+        %fprintf("il sistema primale S è osservabile\n");
         oss = 1;
     else
         fprintf("il sistema primale S non è osservabile\n");
@@ -21,13 +21,13 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
     
     %controllo determinabilità del sistema primale S
     if oss == 1
-        fprintf("il sistema primale S è determinabile\n");
+        %fprintf("il sistema primale S è determinabile\n");
     else
         mat_A = A^4;
         mat_B = vertcat(Q,mat_A);
         
         if rank(mat_B) == rank(Q)
-            fprintf("il sistema primale S è determinabile\n");
+            %fprintf("il sistema primale S è determinabile\n");
             det = 1;
         else
             fprintf("il sistema primale S non è determinabile\n");
@@ -53,7 +53,7 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
             end
         end
         
-        fprintf("è possibile progettare l'osservatore per S\n");
+        fprintf("è possibile progettare l'osservatore per il sistema S\n");
     end
                 
     %progettazione dell'osservatore per il sistema primale S
@@ -66,7 +66,7 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
     if oss == 1
         %caso in cui il sistema primale S è osservabile
         
-        fprintf("il sistema duale Sd è raggiungibile\n");
+        %fprintf("il sistema duale Sd è raggiungibile\n");
         
         %calcolo del vettore tau
         vet = [];
@@ -79,7 +79,7 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
         end            
         tau = vet*(inv(Pd));
         
-        %calcolo del polinomio desiderato
+        %calcolo del polinomio caratteristico desiderato
         newAutovalori = [];
         for i = 1:n
             val = real(autovalori_A(i));
@@ -110,11 +110,11 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
         Fd = -tau*mat;
         V = -(Fd');
 
-        mat_S = A-(V*C);
+        mat_f = A-(V*C);
     else
         %caso in cui il sistema primale S non è osservabile
         
-        fprintf("il sistema duale Sd non è raggiungibile\n");
+        %fprintf("il sistema duale Sd non è raggiungibile\n");
         
         %occorre preliminarmente calcolare le matrici T e T^-1 per la forma
         %di kalman sul sistema duale Sd
@@ -181,7 +181,7 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
         Pdr = [];
         
         for i = 0:nr-1
-            Pdr = vertcat(Pdr,(Adr^i)*Bdr);
+            Pdr = horzcat(Pdr,(Adr^i)*Bdr);
         end
         
         %calcolo della matrice Fd per il sottosistema raggiungibile di Sd
@@ -204,7 +204,7 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
         Pdes = expand(Pdes);
         vet = sym2poly(Pdes);
         
-        mat = zeros(n);
+        mat = zeros(nr);
         j = 0;
         for i = nr+1:-1:1
             val = vet(i)*(Adr^j);
@@ -224,16 +224,18 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
         
         V = -(Fd');
         
-        mat_S = A-(V*C);
+        mat_f = A-(V*C);
     end
     
+    fprintf("i nuovi autovalori della matrice A-VC sono:\n");
+    eig(mat_f)
     %controllo esattezza del risultato trovato
     %se il polinomio caratteristico di A-VC è uguale a quello desiderato
     %allora il risultato è giusto
-    autovalori_mat_S = eig(mat_S);
+    autovalori_mat_f = eig(mat_f);
     P_mat_S = 1;
     for i = 1:n
-        val = t-autovalori_mat_S(i);
+        val = t-autovalori_mat_f(i);
         P_mat_S = P_mat_S*val;
     end
     P_mat_S = expand(Pdes);
@@ -242,7 +244,7 @@ function [mat_S,V] = CreazioneOsservatore(A,B,C,value)
     vet2 = sym2poly(P_mat_S);
     
     if vet1 == vet2
-        fprintf("i polinomi sono uguali -> la matrice A-VC è corretta\n");
+        fprintf("Pa-vc == Pdes -> la matrice A-VC è corretta\n");
     else
         fprintf("Errore, i polinomi sono diversi\n");
     end
